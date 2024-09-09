@@ -1,14 +1,31 @@
 @extends('layouts.app')
 
-@section('title', 'View Post')
-
 @section('content')
-<div class="card">
-    <div class="card-header">
-        <h3>{{ $post['title'] }}</h3>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 margin-tb">
+            <div class="pull-left">
+                <h2> Show Post</h2>
+            </div>
+            <div class="pull-right">
+                <a class="btn btn-primary" href="{{ route('posts.index') }}">Back</a>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-        <p>{{ $post['description'] }}</p>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="form-group">
+                <strong>Title:</strong>
+                {{ $post->title }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <div class="form-group">
+                <strong>Description:</strong>
+                {{ $post->description }}
+            </div>
+        </div>
     </div>
 </div>
 @endsection

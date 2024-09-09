@@ -1,39 +1,72 @@
 @extends('layouts.app')
 
-@section('title', 'All Posts')
-
 @section('content')
-<div class="container mt-4">
-    <h1>All Posts</h1>
-    <a href="{{ route('posts.create') }}" class="btn btn-success mb-3">Create Post</a>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($posts as $post)
-            <tr>
-                <td>{{ $post['id'] }}</td>
-                <td>{{ $post['title'] }}</td>
-                <td>{{ $post['description'] }}</td>
-                <td>
-                    <a href="{{ route('posts.show', $post['id']) }}" class="btn btn-info btn-sm">View</a>
-                    <a href="{{ route('posts.edit', $post['id']) }}" class="btn btn-primary btn-sm">Edit</a>
-                    <form action="{{ route('posts.destroy', $post['id']) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm"
-                            onclick="return confirm('Are you sure you want to delete this post?')">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 margin-tb">
+            <div class="pull-left">
+                <h2>Posts List</h2>
+            </div>
+            <div class="pull-right">
+                <a class="btn btn-success" href="{{ route('posts.create') }}">Create New Post</a>
+            </div>
+        </div>
+    </div>
+
+    @if ($message = Session::get('success'))
+        <div class="alert alert-success">
+            <p>{{ $message }}</p>
+        </div>
+    @endif
+
+    <table class="table table-bordered">
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th width="280px">Action</th>
+        </tr>
+        @foreach ($posts as $post)
+        <tr>
+            <td>{{ $post->id }}</td>
+            <td>{{ $post->title }}</td>
+            <td>{{ $post->description }}</td>
+            <td>
+                <form action="{{ route('posts.destroy', $post->id) }}" method="POST">
+                    <a class="btn btn-info" href="{{ route('posts.show', $post->id) }}">Show</a>
+                    <a class="btn btn-primary" href="{{ route('posts.edit', $post->id) }}">Edit</a>
+
+                    @csrf
+                    @method('DELETE')
+
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ $post->id }}">
+                        Delete
+                    </button>
+
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade" id="deleteModal-{{ $post->id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to delete this post?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </td>
+        </tr>
+        @endforeach
     </table>
+
+    {!! $posts->links('pagination::bootstrap-5') !!}
 </div>
 @endsection

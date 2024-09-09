@@ -2,39 +2,60 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
     public function index()
     {
-        $posts = [
-            ['id' => 1, 'title' => 'First Post', 'description' => 'This is the first post description'],
-            ['id' => 2, 'title' => 'Second Post', 'description' => 'This is the second post description'],
-        ];
+        $posts = Post::latest()->paginate(5); // Show 5 posts per page
         return view('posts.index', compact('posts'));
     }
-    public function show($id)
-    {
-        $post = ['id' => $id, 'title' => "Post $id", 'description' => "This is the description for post $id"];
-        return view('posts.show', compact('post'));
-    }
+
     public function create()
     {
         return view('posts.create');
     }
 
-    public function edit($id)
+    public function store(Request $request)
     {
-        $post = ['id' => $id, 'title' => "Post $id", 'description' => "This is the description for post $id"];
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'required',
+        ]);
+
+        Post::create($request->all());
+
+        return redirect()->route('posts.index')->with('success', 'Post created successfully.');
+    }
+
+    public function show(Post $post)
+    {
+        return view('posts.show', compact('post'));
+    }
+
+    public function edit(Post $post)
+    {
         return view('posts.edit', compact('post'));
     }
-    public function update(Request $request)
+
+    public function update(Request $request, Post $post)
     {
-        return redirect()->route('posts.index')->with('success', 'Post updated successfully');
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'required',
+        ]);
+
+        $post->update($request->all());
+
+        return redirect()->route('posts.index')->with('success', 'Post updated successfully.');
     }
-    public function destroy($id)
+
+    public function destroy(Post $post)
     {
-        return redirect()->route('posts.index')->with('success', 'Post deleted successfully');
+        $post->delete();
+
+        return redirect()->route('posts.index')->with('success', 'Post deleted successfully.');
     }
 }
